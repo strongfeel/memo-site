@@ -36,4 +36,38 @@ router.get("/todos", async (req, res) => {
   return res.status(200).json({ todos });
 });
 
+// routes/todos.router.js
+
+router.patch("/todos/:todoId", async (req, res) => {
+  // 변경할 '해야할 일'의 ID 값을 가져옵니다.
+  const { todoId } = req.params;
+  // '해야할 일'을 몇번째 순서로 설정할 지 order 값을 가져옵니다.
+  const { order } = req.body;
+
+  // 변경하려는 '해야할 일'을 가져옵니다. 만약, 해당 ID값을 가진 '해야할 일'이 없다면 에러를 발생시킵니다.
+  const currentTodo = await Todo.findById(todoId).exec();
+  if (!currentTodo) {
+    return res
+      .status(404)
+      .json({ errorMessage: "존재하지 않는 todo 데이터입니다." });
+  }
+
+  if (order) {
+    // 변경하려는 order 값을 가지고 있는 '해야할 일'을 찾습니다.
+    const targetTodo = await Todo.findOne({ order }).exec();
+    if (targetTodo) {
+      // 만약, 이미 해당 order 값을 가진 '해야할 일'이 있다면, 해당 '해야할 일'의 order 값을 변경하고 저장합니다.
+      targetTodo.order = currentTodo.order;
+      await targetTodo.save();
+    }
+    // 변경하려는 '해야할 일'의 order 값을 변경합니니다.
+    currentTodo.order = order;
+  }
+
+  // 변경된 '해야할 일'을 저장합니다.
+  await currentTodo.save();
+
+  return res.status(200).json({});
+});
+
 export default router;

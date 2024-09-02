@@ -16,6 +16,11 @@ app.use(express.urlencoded({ extended: true }));
 // static Middleware, express.static()을 사용하여 정적 파일을 제공합니다.
 app.use(express.static("./assets"));
 
+app.use((req, res, next) => {
+  console.log("Request URL:", req.originalUrl, " - ", new Date());
+  next();
+});
+
 const router = express.Router();
 
 router.get("/", (req, res) => {
