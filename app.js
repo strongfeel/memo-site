@@ -30,8 +30,6 @@ router.get('/', (req, res) => {
 
 app.use('/api', [router, todoRouter]);
 
-app.use('/api', [router, TodosRouter]);
-
 // 에러 핸들링 미들웨어를 등록합니다.
 app.use(ErrorHandlerMiddleware);
 
