@@ -1,8 +1,9 @@
 // app.js
 
-import express from "express";
-import connect from "./schemas/index.js";
-import todoRouter from "./routes/todos.router.js";
+import express from 'express';
+import connect from './schemas/index.js';
+import todoRouter from './routes/todos.router.js';
+import ErrorHandlerMiddleware from './middlewares/error-handler.middleware.js';
 
 const app = express();
 const PORT = 3000;
@@ -14,21 +15,26 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // static Middleware, express.static()을 사용하여 정적 파일을 제공합니다.
-app.use(express.static("./assets"));
+app.use(express.static('./assets'));
 
 app.use((req, res, next) => {
-  console.log("Request URL:", req.originalUrl, " - ", new Date());
+  console.log('Request URL:', req.originalUrl, ' - ', new Date());
   next();
 });
 
 const router = express.Router();
 
-router.get("/", (req, res) => {
-  return res.json({ message: "Hi!" });
+router.get('/', (req, res) => {
+  return res.json({ message: 'Hi!' });
 });
 
-app.use("/api", [router, todoRouter]);
+app.use('/api', [router, todoRouter]);
+
+app.use('/api', [router, TodosRouter]);
+
+// 에러 핸들링 미들웨어를 등록합니다.
+app.use(ErrorHandlerMiddleware);
 
 app.listen(PORT, () => {
-  console.log(PORT, "포트로 서버가 열렸어요!");
+  console.log(PORT, '포트로 서버가 열렸어요!');
 });
